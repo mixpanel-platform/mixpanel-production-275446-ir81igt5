@@ -7,9 +7,28 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
     <script>
-      // Run queries and display results here
+      var eventName = 'App run';
+      var $dau = MP.api.segment(eventName, 'clientVersion', {
+          from: moment().subtract(30, 'days'),
+          to: moment().subtract(1, 'days'),
+          unit: 'day',
+          type: 'unique'
+      });
+     var $wau = MP.api.segment(eventName, 'clientVersion', {
+          from: moment().subtract(30, 'days'),
+          to: moment().subtract(1, 'days'),
+          unit: 'week',
+          type: 'unique'
+      });
+      $.when($dau, $wau).done(function(dau, wau) {
+        var dauWau = dau.avg().divide(wau.sum()).values();
+      $('<div></div>').appendTo('body').MPChart({ 
+            chartType: 'bar',
+            data: dauWau
+        });
+
+      });
     </script>
   </body>
 </html>
